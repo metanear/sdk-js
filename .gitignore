@@ -1,0 +1,14 @@
+#IDE
+.idea
+
+storage
+node_modules
+*.map
+
+buildpackage.json
+out
+package\-lock\.json
+yarn\-error\.log
+
+# OS X
+.DS_Store
