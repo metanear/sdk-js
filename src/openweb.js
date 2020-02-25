@@ -3,7 +3,7 @@ import * as nacl from "tweetnacl";
 
 const GAS = 2000000000000000;
 
-export const encryptionKey = "encryptionKey";
+const encryptionKey = "encryptionKey";
 
 /**
   a class representing the OpenWebApp API
@@ -17,7 +17,7 @@ export const encryptionKey = "encryptionKey";
   - pull: reads a message from a remote contract
   - post / send: sends a message to a remote contract
  */
-export class OpenWebApp {
+class OpenWebApp {
   constructor(appId, accountId, nearConfig) {
     this.appId = appId;
     this.accountId = accountId;
@@ -383,3 +383,5 @@ export class OpenWebApp {
     }, GAS));
   }
 }
+
+export {encryptionKey, OpenWebApp}
