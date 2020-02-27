@@ -1,7 +1,7 @@
 {
     "name": "near-openweb-js",
     "description": "Javascript SDK library to interact with OpenWeb contracts on NEAR Protocol blockchain",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "repository": {
         "type": "git",
         "url": "git@:nearprotocol/near-openweb-js.git"
@@ -15,13 +15,12 @@
     "devDependencies": {
         "browserify": "^16.2.3",
         "eslint": "^6.5.1",
+        "esmify": "2.1.1",
         "in-publish": "^2.0.0",
-        "uglifyify": "^5.0.1",
-        "esmify": "2.1.1"
+        "uglifyify": "^5.0.1"
     },
     "license": "MIT",
-    "scripts": {
-    },
+    "scripts": {},
     "browserslist": {
         "production": [
             ">0.2%",
