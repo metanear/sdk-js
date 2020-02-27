@@ -37,7 +37,11 @@ class OpenWebApp {
     const keyKey = "enc_key:" + this.accountId + ":" + this.appId + ":";
     let key = localStorage.getItem(keyKey);
     if (key) {
-      key = nacl.box.keyPair.fromSecretKey(Buffer.from(key, 'base64'));
+      const buf = Buffer.from(key, 'base64');
+      if (buf.length !== nacl.box.secretKeyLength) {
+        throw new Error("Given secret key has wrong length");
+      }
+      key = nacl.box.keyPair.fromSecretKey(buf);
     } else {
       key = new nacl.box.keyPair();
       localStorage.setItem(keyKey, Buffer.from(key.secretKey).toString('base64'));
@@ -45,9 +49,24 @@ class OpenWebApp {
     this._key = key;
   }
 
+  /**
+   updates local secret key to the new given secret key and stores it to local storage.
+   @param newSecretKey64 base64 encoded secret key
+   */
+  updateEncryptionKey(newSecretKey64) {
+    const buf = Buffer.from(newSecretKey64, 'base64');
+    if (buf.length !== nacl.box.secretKeyLength) {
+      throw new Error("Given secret key has wrong length");
+    }
+    const key = nacl.box.keyPair.fromSecretKey(buf);
+    this._key = key;
+    const keyKey = "enc_key:" + this.accountId + ":" + this.appId + ":";
+    localStorage.setItem(keyKey, Buffer.from(key.secretKey).toString('base64'));
+  }
+
   async _innerInit() {
     this._keyStore = new nearlib.keyStores.BrowserLocalStorageKeyStore(
-      localStorage, "app:" + this.appId,
+      localStorage, "app:" + this.appId + ":",
     );
     this._near = await nearlib.connect(Object.assign({ deps: { keyStore:  this._keyStore } }, this._nearConfig));
     this._account = new nearlib.Account(this._near.connection, this.accountId);
@@ -69,14 +88,25 @@ class OpenWebApp {
     - apps, num_messages: convenience methods for listing all apps on the OpenWeb and messages for a specific app
    */
   async init() {
-    return this._ready || (this._ready = this._innerInit());
+    return this._init || (this._init = this._innerInit());
   }
 
   /**
-    helper method to check if the user is logged in with the app
+    helper method to check if the the user is logged in with the app
    */
   async ready() {
-    return this.init();
+    await this.init();
+    const key = await this._keyStore.getKey(this._networkId, this.accountId);
+    return !!key;
+  }
+
+  /**
+   helper method to wait until the the user is logged in with the app
+   */
+  async waitReady() {
+    return await this.ready() || this._ready || (this._ready = (new Promise((resolve) => {
+      this._keyAwait = resolve;
+    })));
   }
 
   /**
@@ -96,6 +126,28 @@ class OpenWebApp {
     return accessKey.getPublicKey();
   }
 
+  /**
+    returns a public key on the user account in binary borsh serialized format
+    @returns {Promise<Uint8Array>} public access key
+   */
+  async getSerializedAccessPublicKey() {
+    return nearlib.utils.serialize.serialize(nearlib.transactions.SCHEMA, await this.getAccessPublicKey());
+  }
+
+  /**
+    returns the encryption key stored under given accountId
+
+    @param {string|null} accountId optional accountId to get stored encryption key (your account by default).
+    @param {object} options to specify:
+    - {bool} `encrypted` flag indicating whether or not the value is box encrypted. Default false.
+    - {string} `appId` the name of the app. Same app by default.
+    @returns {Promise<string|null>} the stored encryption key in base64 format or null
+   */
+  async getStoredEncryptionPublicKey(accountId, options) {
+    return this.getFrom(accountId || this.accountId, encryptionKey, options)
+  }
+
+
   getEncryptionPublicKey() {
     return Buffer.from(this._key.publicKey).toString('base64')
   }
@@ -113,11 +165,15 @@ class OpenWebApp {
     }
     await this._keyStore.setKey(this._networkId, this.accountId, this._tmpKey);
     this._tmpKey = null;
+    if (this._keyAwait) {
+      this._keyAwait();
+    }
   }
 
   /**
-   * enforces that the app is ready
-   * @returns {Promise<void>}
+    enforces that the app is ready
+
+    @returns {Promise<void>}
    */
   async forceReady() {
     if (!await this.ready()) {
