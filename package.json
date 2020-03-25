@@ -1,23 +1,16 @@
 {
-    "name": "near-openweb-js",
-    "description": "Javascript SDK library to interact with OpenWeb contracts on NEAR Protocol blockchain",
-    "version": "0.2.0",
+    "name": "metanear-sdk-js",
+    "description": "Javascript SDK library to interact with Meta NEAR contracts on NEAR Protocol blockchain",
+    "version": "0.3.0",
     "repository": {
         "type": "git",
-        "url": "git@:nearprotocol/near-openweb-js.git"
+        "url": "git@:metanear/sdk-js.git"
     },
-    "homepage": "https://github.com/nearprotocol/near-openweb-js",
-    "main": "src/openweb.js",
+    "homepage": "https://github.com/metanear/sdk-js",
+    "main": "src/sdk.js",
     "dependencies": {
-        "nearlib": "^0.21.0",
+        "nearlib": "^0.22.0",
         "tweetnacl": "^1.0.1"
-    },
-    "devDependencies": {
-        "browserify": "^16.2.3",
-        "eslint": "^6.5.1",
-        "esmify": "2.1.1",
-        "in-publish": "^2.0.0",
-        "uglifyify": "^5.0.1"
     },
     "license": "MIT",
     "scripts": {},

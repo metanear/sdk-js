@@ -1,12 +1,12 @@
 import * as nearlib from "nearlib";
 import * as nacl from "tweetnacl";
 
-const GAS = 2000000000000000;
+const GAS = 200_000_000_000_000;
 
 const encryptionKey = "encryptionKey";
 
 /**
-  a class representing the OpenWebApp API
+  a class representing the MetaNear contract API
 
   this API supports local contract methods
   - get: gets a value from local storage
@@ -17,7 +17,7 @@ const encryptionKey = "encryptionKey";
   - pull: reads a message from a remote contract
   - post / send: sends a message to a remote contract
  */
-class OpenWebApp {
+class MetaNearApp {
   constructor(appId, accountId, nearConfig) {
     this.appId = appId;
     this.accountId = accountId;
@@ -440,4 +440,4 @@ class OpenWebApp {
   }
 }
 
-export {encryptionKey, OpenWebApp}
+export {encryptionKey, MetaNearApp}
