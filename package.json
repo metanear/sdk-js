@@ -1,7 +1,7 @@
 {
     "name": "metanear-sdk-js",
     "description": "Javascript SDK library to interact with Meta NEAR contracts on NEAR Protocol blockchain",
-    "version": "0.3.0",
+    "version": "0.3.1",
     "repository": {
         "type": "git",
         "url": "git@:metanear/sdk-js.git"
