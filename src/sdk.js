@@ -1,7 +1,8 @@
-import * as nearlib from "nearlib";
+import * as nearlib from "near-api-js";
 import * as nacl from "tweetnacl";
 
 const GAS = 200000000000000;
+const MESSAGE_GAS = 300000000000000;
 
 const encryptionKey = "encryptionKey";
 
@@ -436,7 +437,7 @@ class MetaNearApp {
       receiver_id: receiverId,
       app_id: options.appId,
       message,
-    }, GAS * 2));
+    }, MESSAGE_GAS));
   }
 }
 
